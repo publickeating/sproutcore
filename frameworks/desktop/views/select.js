@@ -355,7 +355,7 @@ SC.SelectView = SC.ButtonView.extend(
 
     items = this.get('items') ;
     items = this.sortObjects(items) ;
-    len = items.length ;
+    len = items.get ? items.get('length') : items.length ;
 
     //Get the namekey, iconKey and valueKey set by the user
     nameKey = this.get('itemTitleKey') ;
@@ -404,6 +404,9 @@ SC.SelectView = SC.ButtonView.extend(
         if( currentSelectedVal === value ) {
           this.set('title', name) ;
           this.set('icon', icon) ;
+        } else if (SC.kindOf(currentSelectedVal, SC.Record) && currentSelectedVal.get('id') === value.get('id')) {
+            this.set('title', name);
+            this.set('icon', icon);
         }
       }
 
@@ -413,8 +416,12 @@ SC.SelectView = SC.ButtonView.extend(
         //set the _itemIdx - To change the prefMatrix accordingly.
         this.set('_itemIdx', idx) ;
         isChecked = !showCheckbox ? NO : YES ;
-      }
-      else {
+      } else if (SC.kindOf(currentSelectedVal, SC.Record) && currentSelectedVal.get('id') === value.get('id')) {
+        
+        //set the _itemIdx - To change the prefMatrix accordingly.
+        this.set('_itemIdx', idx) ;
+        isChecked = !showCheckbox ? NO : YES ;
+      } else {
         isChecked = NO ;
       }
       
@@ -530,7 +537,7 @@ SC.SelectView = SC.ButtonView.extend(
     className = customViewClassName ? (className + ' ' + customViewClassName) : className ;
     
     SC.prepareStringMeasurement("", className);
-    for (idx = 0, itemsLength = items.length; idx < itemsLength; ++idx) {
+    for (idx = 0, itemsLength = (items.get ? items.get('length') : items.length); idx < itemsLength; ++idx) {
       //getting the width of largest menu item
       item = items.objectAt(idx) ;
       elementOffsetWidth = SC.measureString(item.title).width;
