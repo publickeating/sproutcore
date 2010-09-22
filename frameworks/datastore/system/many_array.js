@@ -208,63 +208,46 @@ SC.ManyArray = SC.Object.extend(SC.Enumerable, SC.Array,
     Pass through to the underlying array.  The passed in objects must be
     records, which can be converted to storeIds.
   */
-  replace: function(idx, amt, recs) {
+  replace: function(idx, amt, records) {
     
     if (!this.get('isEditable')) {
       throw "%@.%@[] is not editable".fmt(this.get('record'), this.get('propertyName'));
     }
     
     var storeIds = this.get('editableStoreIds'), 
-        len      = recs ? (recs.get ? recs.get('length') : recs.length) : 0,
+        toAddLen = records ? (records.get ? records.get('length') : records.length) : 0,
         record   = this.get('record'),
         pname    = this.get('propertyName'),
-        i, keys, ids, toRemove, inverse, attr, inverseRecord;
+        i, keys, recordsToRemove = [], inverse, attr, inverseRecord;
 
-    // map to store keys
-    ids = [] ;
-    for(i=0;i<len;i++) ids[i] = recs.objectAt(i).get('id');
-
-    // if we have an inverse - collect the list of records we are about to 
-    // remove
+    // if we have an inverse - collect the list of records we are about to remove
     inverse = this.get('inverse');
     if (inverse && amt>0) {
-      toRemove = SC.ManyArray._toRemove;
-      if (toRemove) SC.ManyArray._toRemove = null; // reuse if possible
-      else toRemove = [];
-      
-      for(i=0;i<amt;i++) toRemove[i] = this.objectAt(idx + i);
+      for (i=idx;i<idx+amt;i++) recordsToRemove[i] = this.objectAt(i);
     }
     
     // pass along - if allowed, this should trigger the content observer 
-    storeIds.replace(idx, amt, ids);
+    storeIds.replace(idx, amt, records.getEach('id'));
 
-    // ok, notify records that were removed then added; this way reordered
-    // objects are added and removed
     if (inverse) {
-      
-      // notive removals
-      for(i=0;i<amt;i++) {
-        inverseRecord = toRemove[i];
+      // notify removals
+      var toRemoveLen = recordsToRemove.length;
+      for(i=0;i<toRemoveLen;i++) {
+        inverseRecord = recordsToRemove[i];
         attr = inverseRecord ? inverseRecord[inverse] : null;
         if (attr && attr.inverseDidRemoveRecord) {
           attr.inverseDidRemoveRecord(inverseRecord, inverse, record, pname);
         }
       }
 
-      if (toRemove) {
-        toRemove.length = 0; // cleanup
-        if (!SC.ManyArray._toRemove) SC.ManyArray._toRemove = toRemove;
-      }
-
       // notify additions
-      for(i=0;i<len;i++) {
-        inverseRecord = recs.objectAt(i);
+      for(i=0;i<toAddLen;i++) {
+        inverseRecord = records.objectAt(i);
         attr = inverseRecord ? inverseRecord[inverse] : null;
         if (attr && attr.inverseDidAddRecord) {
           attr.inverseDidAddRecord(inverseRecord, inverse, record, pname);
         }
       }
-      
     }
 
     // only mark record dirty if there is no inverse or we are master
