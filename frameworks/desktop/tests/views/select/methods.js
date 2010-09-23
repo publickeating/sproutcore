@@ -7,23 +7,40 @@
 
 /*global module test htmlbody ok equals same stop start */
 
-var pane, view , view1, view2, view3, view4 ;
+var pane, view , view1, view2, view3, view4, view5, view6, view7, MyApp ;
 
 module("SC.SelectView",{
 
   //setup
   setup: function() {
+    var strings;
+    var objects;
+      var scArray;
+    
+    strings = ["Around","The","World"];
+    
+    objects = [{ title: "Around", pos: 3},
+      { title: "The", pos: 1},
+      { title: "World", pos: 2 },
+      { title: "Again", pos: 4}];
+      
+    scArray = SC.Object.create(SC.Array, {
+      items: objects,
+      length: function() {
+        return this.get('items').length;
+      }.property('items').cacheable()
+    });
+    
     SC.RunLoop.begin();
     var isDue = NO ;
-
+    
     //pane
     pane = SC.MainPane.create({
-      objs : ["Around","The","World"],
-      objs2 : [{ title: "Around", pos: 3},
-        { title: "The", pos: 1},
-        { title: "World", pos: 2 },
-        { title: "Again", pos: 4}],
+      objs : strings,
+      objs2 : objects,
+      objs3: scArray,
       selectedValue: "World",
+      selectedObject: objects[0],
       isDue: YES,
       childViews: [
 
@@ -64,7 +81,14 @@ module("SC.SelectView",{
           items: ["My","New", "List"],
           customViewClassName: 'custom-menu-item',
           customViewMenuOffsetWidth: 46
-        })
+        })  ,
+
+          //view7
+          SC.SelectView.extend({
+            itemsBinding: '*owner.objs3',
+            valueBinding: '*owner.selectedObject',
+            itemTitleKey: 'title'
+          })
       ]
     });
 
@@ -74,6 +98,7 @@ module("SC.SelectView",{
     view4 = pane.childViews[3] ;
     view5 = pane.childViews[4] ;
     view6 = pane.childViews[5] ;
+    view7 = pane.childViews[5] ;
     
     pane.append(); // make sure there is a layer...
     SC.RunLoop.end();
@@ -141,4 +166,8 @@ test("The properties for select button should take the specified values", functi
   var prop2 = view6.get('customViewMenuOffsetWidth');
   equals(prop1,'custom-menu-item','Custom view class name should be custom-menu-item');
   equals(prop2,46,'Custom view menu off set width should be 46');
+});
+
+test("Test using SC.Array like objects for items", function() {
+  
 });
