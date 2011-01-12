@@ -62,7 +62,7 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   do not usually work with Binding objects directly but instead describe
   bindings in your class definition using something like:
 
-        valueBinding: "MyApp.someController.title"
+    valueBinding: "MyApp.someController.title"
 
   This will create a binding from "MyApp.someController.title" to the "value"
   property of your object instance automatically.  Now the two values will be
@@ -79,7 +79,7 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   To customize a binding, you can use one of the many helper methods defined
   on SC.Binding like so:
 
-        valueBinding: SC.Binding.single("MyApp.someController.title")
+    valueBinding: SC.Binding.single("MyApp.someController.title")
 
   This will create a binding just like the example above, except that now the
   binding will convert the value of MyApp.someController.title to a single
@@ -88,7 +88,7 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
 
   You can also chain helper methods to build custom bindings like so:
 
-        valueBinding: SC.Binding.single("MyApp.someController.title").notEmpty("(EMPTY)")
+    valueBinding: SC.Binding.single("MyApp.someController.title").notEmpty("(EMPTY)")
 
   This will force the value of MyApp.someController.title to be a single value
   and then check to see if the value is "empty" (null, undefined, empty array,
@@ -105,7 +105,7 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   has changed, but your object will not be changing the preference itself, you
   could do:
 
-        bigTitlesBinding: SC.Binding.oneWay("MyApp.preferencesController.bigTitles")
+    bigTitlesBinding: SC.Binding.oneWay("MyApp.preferencesController.bigTitles")
 
   This way if the value of MyApp.preferencesController.bigTitles changes the
   "bigTitles" property of your object will change also.  However, if you
@@ -129,9 +129,9 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   not allow Integers less than ten.  Note that it checks the value of the
   bindings and allows all other values to pass:
 
-        valueBinding: SC.Binding.transform(function(value, binding) {
-          return ((SC.typeOf(value) === SC.T_NUMBER) && (value < 10)) ? 10 : value;
-        }).from("MyApp.someController.value")
+    valueBinding: SC.Binding.transform(function(value, binding) {
+      return ((SC.typeOf(value) === SC.T_NUMBER) && (value < 10)) ? 10 : value;
+    }).from("MyApp.someController.value")
 
   If you would like to instead use this transform on a number of bindings,
   you can also optionally add your own helper method to SC.Binding.  This
@@ -139,22 +139,22 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   below adds a new helper called notLessThan() which will limit the value to
   be not less than the passed minimum:
 
-      SC.Binding.notLessThan = function(minValue) {
-        return this.transform(function(value, binding) {
-          return ((SC.typeOf(value) === SC.T_NUMBER) && (value < minValue)) ? minValue : value ;
-        }) ;
-      } ;
+    SC.Binding.notLessThan = function(minValue) {
+      return this.transform(function(value, binding) {
+        return ((SC.typeOf(value) === SC.T_NUMBER) && (value < minValue)) ? minValue : value ;
+      }) ;
+    } ;
 
   You could specify this in your core.js file, for example.  Then anywhere in
   your application you can use it to define bindings like so:
 
-        valueBinding: SC.Binding.from("MyApp.someController.value").notLessThan(10)
+    valueBinding: SC.Binding.from("MyApp.someController.value").notLessThan(10)
 
   Also, remember that helpers are chained so you can use your helper along with
   any other helpers.  The example below will create a one way binding that
   does not allow empty values or values less than 10:
 
-        valueBinding: SC.Binding.oneWay("MyApp.someController.value").notEmpty().notLessThan(10)
+    valueBinding: SC.Binding.oneWay("MyApp.someController.value").notEmpty().notLessThan(10)
 
   Note that the built in helper methods all allow you to pass a "from"
   property path so you don't have to use the from() helper to set the path.
@@ -174,12 +174,12 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   bindings that allow values greater than 10 throughout your app.  You could
   create a binding template in your core.js like this:
 
-        MyApp.LimitBinding = SC.Binding.oneWay().notEmpty().notLessThan(10);
+    MyApp.LimitBinding = SC.Binding.oneWay().notEmpty().notLessThan(10);
 
   Then anywhere you want to use this binding, just refer to the template like
   so:
 
-        valueBinding: MyApp.LimitBinding.beget("MyApp.someController.value")
+    valueBinding: MyApp.LimitBinding.beget("MyApp.someController.value")
 
   Note that when you use binding templates, it is very important that you
   always start by using beget() to extend the template.  If you do not do
@@ -206,14 +206,14 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   examples above, during init, SproutCore objects will effectively call
   something like this on your binding:
 
-        binding = this.valueBinding.beget().to("value", this) ;
+    binding = this.valueBinding.beget().to("value", this) ;
 
   This creates a new binding instance based on the template you provide, and
   sets the to path to the "value" property of the new object.  Now that the
   binding is fully configured with a "from" and a "to", it simply needs to be
   connected to become active.  This is done through the connect() method:
 
-        binding.connect() ;
+    binding.connect() ;
 
   Now that the binding is connected, it will observe both the from and to side
   and relay changes.
@@ -222,25 +222,25 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   understand this anyway), you could manually create an active binding by
   doing the following:
 
-        SC.Binding.from("MyApp.someController.value")
-         .to("MyApp.anotherObject.value")
-         .connect();
+    SC.Binding.from("MyApp.someController.value")
+     .to("MyApp.anotherObject.value")
+     .connect();
 
   You could also use the bind() helper method provided by SC.Object. (This is
   the same method used by SC.Object.init() to setup your bindings):
 
-        MyApp.anotherObject.bind("value", "MyApp.someController.value") ;
+    MyApp.anotherObject.bind("value", "MyApp.someController.value") ;
 
   Both of these code fragments have the same effect as doing the most friendly
   form of binding creation like so:
 
 
-        MyApp.anotherObject = SC.Object.create({
-          valueBinding: "MyApp.someController.value",
+    MyApp.anotherObject = SC.Object.create({
+      valueBinding: "MyApp.someController.value",
 
-          // OTHER CODE FOR THIS OBJECT...
+      // OTHER CODE FOR THIS OBJECT...
 
-        }) ;
+    }) ;
 
   SproutCore's built in binding creation method make it easy to automatically
   create bindings for you.  You should always use the highest-level APIs
@@ -492,15 +492,19 @@ SC.Binding = /** @scope SC.Binding.prototype */{
   _computeBindingValue: function() {
     var source = this._bindingSource,
         key    = this._bindingKey,
+        transforms, transform, len,
         v, idx;
 
     this._bindingValue = v = (source ? source.getPath(key) : null);
 
-    // apply any transforms to get the to property value also
-    var transforms = this._transforms;
+    if (this._oneWay || this.isForward()) {
+      transforms = this._transforms;
+    } else {
+      transforms = this._reverseTransforms;
+    }
+
     if (transforms) {
-      var len = transforms.length,
-          transform;
+      len = transforms.length;
       for(idx=0;idx<len;idx++) {
         transform = transforms[idx] ;
         v = transform(v, this) ;
@@ -587,26 +591,27 @@ SC.Binding = /** @scope SC.Binding.prototype */{
         bench = SC.BENCHMARK_BINDING_NOTIFICATIONS,
         log = SC.LOG_BINDINGS ;
 
-    // the from property value will always be the binding value, update if
-    // needed.
     if (!this._oneWay && this._fromTarget) {
       if (log) SC.Logger.log("%@: %@ -> %@".fmt(this, v, tv)) ;
       if (bench) SC.Benchmark.start(this.toString() + "->") ;
       if (this.isForward()) {
+        // In the forward direction the source equals the from target and the from value is unchanged
         this._fromTarget.setPathIfChanged(this._fromPropertyKey, v) ;
       } else {
+        // In the reverse direction the source equals the to target and the from value is reverse transformed
         this._fromTarget.setPathIfChanged(this._fromPropertyKey, tv) ;
       }
       if (bench) SC.Benchmark.end(this.toString() + "->") ;
     }
 
-    // update the to value with the transformed value if needed.
     if (this._toTarget) {
       if (log) SC.Logger.log("%@: %@ <- %@".fmt(this, v, tv)) ;
       if (bench) SC.Benchmark.start(this.toString() + "<-") ;
-      if (this.isForward()) {
+      if (this._oneWay || this.isForward()) {
+        // In the forward direction the source equals the from target and the to value is transformed
         this._toTarget.setPathIfChanged(this._toPropertyKey, tv) ;
       } else {
+        // In the reverse direction the source equals the to target and the to value is unchanged
         this._toTarget.setPathIfChanged(this._toPropertyKey, v) ;
       }
       if (bench) SC.Benchmark.start(this.toString() + "<-") ;
@@ -707,18 +712,18 @@ SC.Binding = /** @scope SC.Binding.prototype */{
   },
 
   /**
-    Returns the direction of the binding.  If isForward is YES, then the value 
-    being passed came from the "from" side of the binding (i.e. the "Binding.path" 
-    you named).  If isForward is NO, then the value came from the "to" side (i.e. 
-    the property you named with "propertyBinding").  You can vary your transform 
+    Returns the direction of the binding.  If isForward is YES, then the value
+    being passed came from the "from" side of the binding (i.e. the "Binding.path"
+    you named).  If isForward is NO, then the value came from the "to" side (i.e.
+    the property you named with "propertyBinding").  You can vary your transform
     behavior if you are based on the direction of the change.
-    
+
     @returns {Boolean}
   */
   isForward: function() {
-    return this._fromTarget === this._bindingSource;
+    return this._toTarget !== this._bindingSource;
   },
-  
+
   /**
     Configures the binding as one way.  A one-way binding will relay changes
     on the "from" side to the "to" side, but not the other way around.  This
@@ -748,13 +753,15 @@ SC.Binding = /** @scope SC.Binding.prototype */{
 
     The function you pass must have the following signature:
 
-          function(value) {} ;
+    {{{
+      function(fromValue) {} ;
+    }}}
 
     It must return either the transformed value or an error object.
 
     Transform functions are chained, so they are called in order.  If you are
     extending a binding and want to reset the transforms, you can call
-    resetTransform() first.
+    resetTransforms() first.
 
     @param {Function} transformFunc the transform function.
     @returns {SC.Binding} this
@@ -764,7 +771,7 @@ SC.Binding = /** @scope SC.Binding.prototype */{
     var t = binding._transforms ;
 
     // clone the transform array if this comes from the parent
-    if (t && (t === binding.parentBinding._transform)) {
+    if (t && (t === binding.parentBinding._transforms)) {
       t = binding._transforms = t.slice() ;
     }
 
@@ -772,6 +779,43 @@ SC.Binding = /** @scope SC.Binding.prototype */{
     if (!t) t = binding._transforms = [] ;
 
     // add the transform function
+    t.push(transformFunc) ;
+    return binding;
+  },
+
+  /**
+    Adds the specified transform function to the array of reverse transform functions.
+    That is if the "to" side of a two-way binding changes, the value applied to the
+    "from" side will be transformed by this function.
+
+    The function you pass must have the following signature:
+
+    {{{
+      function(toValue) {} ;
+    }}}
+
+    It must return either the transformed value or an error object.
+
+    Transform functions are chained, so they are called in order.  If you are
+    extending a binding and want to reset the transforms, you can call
+    resetTransforms() first.
+
+    @param transformFunc {Function} the reverse transform function.
+    @returns {SC.Binding} this
+  */
+  reverseTransform: function(transformFunc) {
+    var binding = (this === SC.Binding) ? this.beget() : this ;
+    var t = binding._reverseTransforms ;
+
+    // clone the transform array if this comes from the parent
+    if (t && (t === binding.parentBinding._reverseTransforms)) {
+      t = binding._reverseTransforms = t.slice() ;
+    }
+
+    // create the reverse transform array if needed.
+    if (!t) t = binding._reverseTransforms = [] ;
+
+    // add the reverse transform function
     t.push(transformFunc) ;
     return binding;
   },
@@ -785,7 +829,7 @@ SC.Binding = /** @scope SC.Binding.prototype */{
   */
   resetTransforms: function() {
     var binding = (this === SC.Binding) ? this.beget() : this ;
-    binding._transforms = null ; return binding ;
+    binding._transforms = null ; binding._reverseTransforms = null ; return binding ;
   },
 
   /**
@@ -818,9 +862,9 @@ SC.Binding = /** @scope SC.Binding.prototype */{
     This will allow single values, nulls, and error values to pass through.  If
     you pass an array, it will be mapped as so:
 
-          [] => null
-          [a] => a
-          [a,b,c] => Multiple Placeholder
+      [] => null
+      [a] => a
+      [a,b,c] => Multiple Placeholder
 
     You can pass in an optional multiple placeholder or it will use the
     default.
@@ -984,7 +1028,7 @@ SC.Binding = /** @scope SC.Binding.prototype */{
 
   /**
     Adds a transform that will return YES if the value is null, NO otherwise.
-    
+
     @param {String} fromPath optional from path
     @returns {SC.Binding} this
   */
@@ -1008,7 +1052,7 @@ SC.Binding = /** @scope SC.Binding.prototype */{
 /**
   Shorthand method to define a binding.  This is the same as calling:
 
-        SC.binding(path) = SC.Binding.from(path)
+    SC.binding(path) = SC.Binding.from(path)
 */
 SC.binding = function(path, root) { return SC.Binding.from(path,root); } ;
 
