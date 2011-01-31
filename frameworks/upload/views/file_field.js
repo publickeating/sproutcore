@@ -4,6 +4,8 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
+/*globals UV */
+
 sc_require('protocols/file_field_view_delegate');
 
 /** @class
@@ -17,8 +19,8 @@ sc_require('protocols/file_field_view_delegate');
 */
 
 // TODO: send warnings if the protocol isn't supported and try not to just hang
-SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
-/** @scope SC.FileView.prototype */
+UV.FileFieldView = SC.View.extend(SC.DelegateSupport,
+/** @scope UV.FileFieldView.prototype */
 {
   classNames: 'sc-file-field-view'.w(),
   

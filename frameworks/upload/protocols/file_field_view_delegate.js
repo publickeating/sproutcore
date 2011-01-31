@@ -4,6 +4,8 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
+/*globals UV */
+
 /**
   @namespace
   
@@ -13,7 +15,7 @@
   
   @since SproutCore 1.0
 */
-SC.FileFieldViewDelegate = {
+UV.FileFieldViewDelegate = {
   
 /**
     Called before the browser opens its file dialog for the selected input. 
