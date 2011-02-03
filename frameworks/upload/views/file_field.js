@@ -475,8 +475,8 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
       },
 
       render: function(context, firstTime) {
-        context.attr('type', 'file').attr('name', this.get('name')).attr('multiple', this.get('numberOfFiles') > 1).end();
-        sc_super();
+        if (firstTime) context.attr('type', 'file').attr('name', this.get('name')).attr('multiple', this.get('numberOfFiles') > 1).end();
+        //sc_super();
       },
       
       // This helper gets us isEnabled functionality from the SC.Control mixin
