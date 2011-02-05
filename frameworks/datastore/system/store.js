@@ -1750,12 +1750,12 @@ SC.Store = SC.Object.extend( /** @scope SC.Store.prototype */ {
     @param {Hash} params optional additional parameters to pass along to the
       data source
     @param {Function|Array} callback function or array of functions
-    
+
     @returns {Boolean} if the action was succesful.
   */
   commitRecords: function(recordTypes, ids, storeKeys, params, callbacks) {
     var source    = this._getDataSource(),
-        isArray   = SC.typeOf(recordTypes) === SC.T_ARRAY,
+        isArray   = SC.typeOf(recordTypes) === SC.T_ARRAY,    
         hasCallbackArray = SC.typeOf(callbacks) === SC.T_ARRAY,    
         retCreate= [], retUpdate= [], retDestroy = [], 
         rev       = SC.Store.generateStoreKey(),
@@ -1896,7 +1896,7 @@ SC.Store = SC.Object.extend( /** @scope SC.Store.prototype */ {
       }
       if(storeKey) {
         status = this.readStatus(storeKey);
-        
+
         if ((status == K.EMPTY) || (status == K.ERROR)) {
           throw K.NOT_FOUND_ERROR ;
         }
@@ -2150,7 +2150,7 @@ SC.Store = SC.Object.extend( /** @scope SC.Store.prototype */ {
     
     statusOnly = dataHash || newId ? NO : YES;
     this.dataHashDidChange(storeKey, null, statusOnly);
-
+    
     // Force record to refresh its cached properties based on store key
     var record = this.materializeRecord(storeKey);
     if (record != null) {

@@ -1,5 +1,5 @@
 /**
- * Nested Record Array (SC.ChildRecord) Unit Test
+ * Nested Record Array (SC.Record) Unit Test
  *
  * @author Evin Grano
  */

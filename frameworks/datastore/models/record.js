@@ -267,7 +267,7 @@ SC.Record = SC.Object.extend(
     records destroyed in the store as well as changing the isDestroyed 
     property on the record to YES.  If this is a new record, this will avoid 
     creating the record in the first place.
-
+    
     @param {boolean} recordOnly, optional param if you want to only THIS record
       even if it is a child record. 
     
@@ -506,8 +506,8 @@ SC.Record = SC.Object.extend(
       // also notify manyArrays
       var manyArrays = this.relationships,
           loc        = manyArrays ? manyArrays.length : 0 ;
-      while(--loc>=0) manyArrays[loc].recordPropertyDidChange(keys);      
-    }
+      while(--loc>=0) manyArrays[loc].recordPropertyDidChange(keys);
+      }
   },
   
   /**

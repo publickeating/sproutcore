@@ -47,7 +47,7 @@ SC.ChildAttribute = SC.RecordAttribute.extend(
   },
   
   // Default fromType is just returning itself
-  fromType: function(record, key, value) {
+  fromType: function(record, key, value){
     var sk, store, ret;
 
     if (record) {
@@ -73,7 +73,7 @@ SC.ChildAttribute = SC.RecordAttribute.extend(
 
     return ret;
   },
- 
+    
   /**
     The core handler.  Called from the property.
     @param {SC.Record} record the record instance
