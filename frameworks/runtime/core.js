@@ -612,7 +612,9 @@ SC.mixin(/** @scope window.SC.prototype */ {
         idx = ret.length;
         while ( idx-- ) { ret[idx] = SC.copy( ret[idx], true ); }
       }
-      break ;
+        break ;
+
+      break;
 
     case "object":
       ret = {} ;
@@ -856,30 +858,30 @@ SC.mixin(Function.prototype,
 
     Consider the following example:
 
-          contact = SC.Object.create({
+      contact = SC.Object.create({
 
-            firstName: "Charles",
-            lastName: "Jolley",
+        firstName: "Charles",
+        lastName: "Jolley",
 
-            // This is a computed property!
-            fullName: function() {
-              return this.getEach('firstName','lastName').compact().join(' ') ;
-            }.property('firstName', 'lastName'),
+        // This is a computed property!
+        fullName: function() {
+          return this.getEach('firstName','lastName').compact().join(' ') ;
+        }.property('firstName', 'lastName'),
 
-            // this is not
-            getFullName: function() {
-              return this.getEach('firstName','lastName').compact().join(' ') ;
-            }
-          });
+        // this is not
+        getFullName: function() {
+          return this.getEach('firstName','lastName').compact().join(' ') ;
+        }
+      });
 
-          contact.get('firstName') ;
-          --> "Charles"
+      contact.get('firstName') ;
+      --> "Charles"
 
-          contact.get('fullName') ;
-          --> "Charles Jolley"
+      contact.get('fullName') ;
+      --> "Charles Jolley"
 
-          contact.get('getFullName') ;
-          --> function()
+      contact.get('getFullName') ;
+      --> function()
 
     Note that when you get the fullName property, SproutCore will call the
     fullName() function and return its value whereas when you get() a property
@@ -923,20 +925,20 @@ SC.mixin(Function.prototype,
     For example, the following object will split any full name that you set
     into a first name and last name components and save them.
 
-          contact = SC.Object.create({
+      contact = SC.Object.create({
 
-            fullName: function(key, value) {
-              if (value !== undefined) {
-                var parts = value.split(' ') ;
-                this.beginPropertyChanges()
-                  .set('firstName', parts[0])
-                  .set('lastName', parts[1])
-                .endPropertyChanges() ;
-              }
-              return this.getEach('firstName', 'lastName').compact().join(' ');
-            }.property('firstName','lastName')
+        fullName: function(key, value) {
+          if (value !== undefined) {
+            var parts = value.split(' ') ;
+            this.beginPropertyChanges()
+              .set('firstName', parts[0])
+              .set('lastName', parts[1])
+            .endPropertyChanges() ;
+          }
+          return this.getEach('firstName', 'lastName').compact().join(' ');
+        }.property('firstName','lastName')
 
-          }) ;
+      }) ;
 
     Why Use The Same Method for Getters and Setters?
     ---
@@ -1015,12 +1017,12 @@ SC.mixin(Function.prototype,
 
 /**
   @class
-  
+
   Implements support methods useful when working with strings in SproutCore
   applications.
   */
 SC.CoreString = /** @scope SC.CoreString.prototype */{
-  
+
   // Interpolate string. looks for %@ or %@1; to control the order of params.
   /**
     Apply formatting options to the string.  This will look for occurrences
@@ -1035,8 +1037,8 @@ SC.CoreString = /** @scope SC.CoreString.prototype */{
     Examples
     -----
 
-        "Hello %@ %@".fmt('John', 'Doe') => "Hello John Doe"
-        "Hello %@2, %@1".fmt('John', 'Doe') => "Hello Doe, John"
+      "Hello %@ %@".fmt('John', 'Doe') => "Hello John Doe"
+      "Hello %@2, %@1".fmt('John', 'Doe') => "Hello Doe, John"
 
     @param {Object...} args optional arguments
     @returns {String} formatted string
@@ -1050,7 +1052,7 @@ SC.CoreString = /** @scope SC.CoreString.prototype */{
       return ((s === null) ? '(null)' : (s === undefined) ? '' : s).toString();
     }) ;
   },
-  
+
   /**
     Localizes the string.  This will look up the reciever string as a key
     in the current Strings hash.  If the key matches, the loc'd value will be
@@ -1064,7 +1066,7 @@ SC.CoreString = /** @scope SC.CoreString.prototype */{
     str = SC.STRINGS[str] || str;
     return SC.CoreString.fmt(str, arguments) ;
   },
-  
+
   /**
     Splits the string into words, separated by spaces. Empty strings are
     removed from the results.
