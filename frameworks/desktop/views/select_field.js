@@ -201,6 +201,10 @@ SC.SelectFieldView = SC.FieldView.extend(
         }
       }, this );
    
+      this.setFieldValue(fieldValue);
+   
+      } else {
+        this.set('value',null);
       }
     } else {
       this.$().attr('disabled', this.get('isEnabled') ? null : 'disabled');
