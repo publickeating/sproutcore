@@ -9,10 +9,10 @@ sc_require('protocols/file_field_view_delegate');
 
 /** @class
 
-  Implements a customized file input by creating a transparent file type input over top of a SC.ButtonView and using a hidden iframe to receive results (simulated AJAX).  
-  
+  Implements a customized file input by creating a transparent file type input over top of a SC.ButtonView and using a hidden iframe to receive results (simulated AJAX).
+
   There is only one caveat to using SC.FileFieldView unmodified, which is, on completion of the file load, the server must return a plain/text document containing stringified JSON.  SC.FileFieldView will parse the document (assuming it's plain/text) and pass the resulting JSON object to its delegate.
-  
+
   @extends SC.View
   @since SproutCore 1.0
 */
@@ -22,17 +22,17 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
 /** @scope SC.FileFieldView.prototype */
 {
   classNames: 'sc-file-field-view'.w(),
-  
+
   /**
     The title of the button.
-    
+
     @property {String}
     */
   buttonTitle: 'Choose File',
 
   /**
     The theme of the button. See SC.ButtonView.
-    
+
     @property {String}
     */
   buttonTheme: 'capsule',
@@ -46,9 +46,9 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
 
   /**
     Control HTML escaping of the button title and filename labels.
-    
-    WARNING: HTML escaping is turned off by default, to properly display horizontal ellipses &hellip;.  
-    
+
+    WARNING: HTML escaping is turned off by default, to properly display horizontal ellipses &hellip;.
+
     @property {Boolean}
     */
   escapeHTML: NO,
@@ -63,14 +63,14 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
   /**
     By default, SC.FileFieldView shows the name of the selected file to the right of the button, set
     this to NO to not display anything.
-    
+
     @property {Boolean}
     */
   displaysSelectedFilename: YES,
 
   /**
     The submit action for the form.  This should be the path to your server's upload handler.
-    
+
     @property {String}
     */
   formAction: '',
@@ -78,44 +78,44 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
   /**
     The name attribute for the file input(s).  The default value creates an input as such:
       <input type="file" name="files[]" ...
-    
+
     @property {String}
     */
   inputName: 'files[]',
 
   /**
     Upload the file(s) automatically when set.  If numberOfFiles > 1, then the form won't be submitted until all inputs have values.
-    
+
     @property {Boolean} YES, to autosubmit when all of the inputs have a value
     */
   autoSubmit: YES,
 
   /**
     The maximum number of file uploads.  A value greater than one will create multiple file inputs or set the HTML5 'multiple' attribute for a single input in browsers that support it.
-    
+
     TODO: add the multiple attribute code per browser
-    
+
     @property {Number}
     */
   numberOfFiles: 1,
 
   /**
     NOTE: This property only applies if numberOfFiles > 1
-    
+
     Show additional file upload buttons progressively as each is assigned a value.  If isProgressive is NO, then
     all of the file upload buttons (matching numberOfFiles) will be visible.
-    
+
     @property {Boolean}
     */
   isProgressive: YES,
-  
+
   /**
     Submits the form and returns the unique X-Progress-ID that was submitted with the files.  If your backend is configured to track file uploads, such as with mod_upload_progress for lighttpd or NginxHttpUploadProgressModule, this X-Progress-ID can be used to periodically query the server for the progress of the upload.
-    
+
     The unique X-Progress-ID is also sent to the delegate at this time within fileFieldViewDidSubmit(fileFieldView, result).
-    
+
     TODO: generate a universally (between clients) unique id and allow this to be set externally
-    
+
     @returns {String} the unique identifier sent as X-Progress-ID with the upload request
    */
   submitForm: function() {
@@ -146,7 +146,7 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
 
     // disable ourselves while uploading
     this.set('isEnabled', NO);
-    
+
     this.invokeLast(function() {
       this.invokeDelegateMethod(del, 'fileFieldViewDidSubmit', this, uuid);
     });
@@ -156,21 +156,14 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
 
   delegate: null,
 
-  /** SC.View **/
-  didAppendToDocument: function() {
-    sc_super();
-  },
-  
   didCreateLayer: function() {
-    sc_super();
-
     // Create the form (and iframe and input(s))
     this._createForm();
   },
 
-  willDestroyLayer: function() {
-    sc_super();
+  /** SC.View **/
 
+  willDestroyLayer: function() {
     var idx = this.get('numberOfFiles'),
     input;
     while (--idx >= 0) {
@@ -180,7 +173,7 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
       SC.Event.remove(input, 'mouseup', this, this._mouseUpInInput);
       SC.Event.remove(input, 'mouseout', this, this._mouseOutOfInput);
     }
-    
+
     this._inputs = null;
     this.removeAllChildren();
   },
@@ -284,22 +277,22 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
     } else {
       throw 'Unable to retrieve file upload return value. Unknown iframe DOM structure.';
     }
-    
+
     try {
       result = JSON.parse(result);
-    } catch(err) {  
+    } catch(err) {
       // Unable to parse the result
       console.error('Result:');
       console.dirxml(this._iframe.$()[0]);
       throw('Unable to parse file upload return value.\n\n' + err);
     }
-  
+
     var del = this.get('delegate') ? this.get('delegate') : this;
     this.invokeDelegateMethod(del, 'fileFieldViewDidComplete', this, result);
 
     // re-enable ourselves
     this.set('isEnabled', YES);
-    
+
     // Throw away the results frame (but pass on something)
     this.invokeLast(function() {
       SC.Event.remove(this._iframe.$()[0], 'load', this, this._iframeLoad);
@@ -369,23 +362,23 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
         context.attr(attributes);
         sc_super();
       },
-      
+
       willDestroyLayer: function() {
         sc_super();
-        
+
         this.removeAllChildren();
       }
 
       // TODO: apparently this has no use in any of the upload progress modules
       // childViews: 'xProgressIDField'.w(),
-      // 
+      //
       // xProgressIDField: SC.View.design({
       //   tagName: 'input',
-      // 
+      //
       //   uuid: '',
-      // 
+      //
       //   displayProperties: 'uuid'.w(),
-      //   
+      //
       //   render: function(context, firstTime) {
       //     var attributes = {
       //       name: 'X-Progress-ID',
@@ -393,7 +386,7 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
       //     };
       //     context.attr(attributes);
       //     if (firstTime) context.attr('type', 'hidden');
-      //     
+      //
       //     sc_super();
       //   }
       // })
@@ -469,7 +462,7 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
       },
       classNames: 'sc-file-field-input-view'.w(),
       isEnabledBinding: SC.Binding.oneWay('*parentView.parentView.isEnabled'),
-      
+
       acceptsFirstResponder: function() {
         return YES;
       },
@@ -478,9 +471,9 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
         if (firstTime) context.attr('type', 'file').attr('name', this.get('name')).attr('multiple', this.get('numberOfFiles') > 1).end();
         //sc_super();
       },
-      
+
       // This helper gets us isEnabled functionality from the SC.Control mixin
-      $input: function() { 
+      $input: function() {
         return this.$();
        }
     });
