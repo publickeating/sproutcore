@@ -1,3 +1,9 @@
+// ==========================================================================
+// Project:   SproutCore - JavaScript Application Framework
+// Copyright: ©2006-2011 Strobe Inc. and contributors.
+//            ©2008-2011 Apple Inc. All rights reserved.
+// License:   Licensed under MIT license (see license.js)
+// ==========================================================================
 // ========================================================================
 // SC.Binding Tests
 // ========================================================================
@@ -176,66 +182,64 @@ test("changing first output should propograte to third after flush", function() 
 module("Custom Binding", {
   
   setup: function() {
-  Bon1 = SC.Object.extend({
-    value1: "hi",
-    value2: 83,
-    array1: []
-  });
-  
-  bon2 = SC.Object.create({
-    val1: "hello",
-    val2: 25,
-    arr: [1,2,3,4]
-  });
-  
-  TestNamespace = {
+	Bon1 = SC.Object.extend({
+		value1: "hi",
+		value2: 83,
+		array1: []
+	});
+	
+	bon2 = SC.Object.create({
+		val1: "hello",
+		val2: 25,
+		arr: [1,2,3,4]
+	});
+	
+	TestNamespace = {
       bon2: bon2,
       Bon1: Bon1
     } ;
   },
   
   teardown: function() { 
-    delete Bon1 ;
-    delete bon2 ;
-  //delete TestNamespace;
+    bon2.destroy();
   }
 });
 
 test("Binding value1 such that it will recieve only single values", function() {
-  var bon1 = Bon1.create({
-    value1Binding: SC.Binding.single("TestNamespace.bon2.val1"),
-    array1Binding: SC.Binding.single("TestNamespace.bon2.arr")
-  });
-  SC.Binding.flushPendingChanges();
-  var a = [23,31,12,21];
-  bon2.set("arr", a);
-  bon2.set("val1","changed");
-  SC.Binding.flushPendingChanges();
-  equals(bon2.get("val1"),bon1.get("value1"));
-  equals("@@MULT@@",bon1.get("array1"));
-  bon1.destroy();
+	var bon1 = Bon1.create({
+		value1Binding: SC.Binding.single("TestNamespace.bon2.val1"),
+		array1Binding: SC.Binding.single("TestNamespace.bon2.arr")
+	});
+	SC.Binding.flushPendingChanges();
+	var a = [23,31,12,21];
+	bon2.set("arr", a);
+	bon2.set("val1","changed");
+	SC.Binding.flushPendingChanges();
+	equals(bon2.get("val1"),bon1.get("value1"));
+	equals("@@MULT@@",bon1.get("array1"));
+	bon1.destroy();
 });
 
 test("Single binding using notEmpty function.", function() {
-  var bond = Bon1.create ({
-    array1Binding: SC.Binding.single("TestNamespace.bon2.arr").notEmpty(null,'(EMPTY)')
-  });
-  SC.Binding.flushPendingChanges();
-  bon2.set("arr", []);
-  SC.Binding.flushPendingChanges();
-  equals("(EMPTY)",bond.get("array1"));
+	var bond = Bon1.create ({
+	  array1Binding: SC.Binding.single("TestNamespace.bon2.arr").notEmpty(null,'(EMPTY)')
+	});
+	SC.Binding.flushPendingChanges();
+	bon2.set("arr", []);
+	SC.Binding.flushPendingChanges();
+	equals("(EMPTY)",bond.get("array1"));
 });
 
 test("Binding with transforms, function to check the type of value", function() {
-  var jon = Bon1.create({
-    value1Binding: SC.Binding.transform(function(val1) {
-      return (SC.typeOf(val1) == SC.T_STRING)? val1 : "";
-    }).from("TestNamespace.bon2.val1")
-  });
-  SC.Binding.flushPendingChanges();
-  bon2.set("val1","changed");
-  SC.Binding.flushPendingChanges();
-  equals(jon.get("value1"), bon2.get("val1"));
+	var jon = Bon1.create({
+		value1Binding: SC.Binding.transform(function(val1) {
+			return (SC.typeOf(val1) == SC.T_STRING)? val1 : "";
+		}).from("TestNamespace.bon2.val1")
+	});
+	SC.Binding.flushPendingChanges();
+	bon2.set("val1","changed");
+	SC.Binding.flushPendingChanges();
+	equals(jon.get("value1"), bon2.get("val1"));
 });
 
 test("two bindings to the same value should sync in the order they are initialized", function() {
@@ -295,8 +299,8 @@ module("AND binding", {
   },
 
   teardown: function() {
-    delete SC.testControllerA;
-    delete SC.testControllerB;
+    SC.testControllerA.destroy();
+    SC.testControllerB.destroy();
   }
   
 });
@@ -352,8 +356,8 @@ module("OR binding", {
   },
 
   teardown: function() {
-    delete SC.testControllerA;
-    delete SC.testControllerB;
+    SC.testControllerA.destroy();
+    SC.testControllerB.destroy();
   }
   
 });
@@ -392,6 +396,56 @@ test("Binding refreshes after a couple of items have been pushed in the array", 
   fromObject.get('value').pushObjects(['foo', 'bar']);
   SC.Binding.flushPendingChanges();
   equals(toObject.get('value'), 'foo,bar');
+});
+
+
+module("propertyNameBinding with longhand", {
+  setup: function(){
+    TestNamespace = {
+      fromObject: SC.Object.create({
+        value: "originalValue"
+      }),
+      toObject: SC.Object.create({
+        valueBinding: SC.Binding.from('TestNamespace.fromObject.value'),
+        localValue: "originalLocal",
+        relativeBinding: SC.Binding.from('.localValue')
+      })
+    };
+  },
+  teardown: function(){
+    TestNamespace.fromObject.destroy();
+    TestNamespace.toObject.destroy();
+    delete TestNamespace.fromObject;
+    delete TestNamespace.toObject;
+  }
+});
+
+test("works with full path", function(){
+  SC.RunLoop.begin();
+  TestNamespace.fromObject.set('value', "updatedValue");
+  SC.RunLoop.end();
+
+  equals(TestNamespace.toObject.get('value'), "updatedValue");
+
+  SC.RunLoop.begin();
+  TestNamespace.fromObject.set('value', "newerValue");
+  SC.RunLoop.end();
+
+  equals(TestNamespace.toObject.get('value'), "newerValue");
+});
+
+test("works with local path", function(){
+  SC.RunLoop.begin();
+  TestNamespace.toObject.set('localValue', "updatedValue");
+  SC.RunLoop.end();
+
+  equals(TestNamespace.toObject.get('relative'), "updatedValue");
+
+  SC.RunLoop.begin();
+  TestNamespace.toObject.set('localValue', "newerValue");
+  SC.RunLoop.end();
+
+  equals(TestNamespace.toObject.get('relative'), "newerValue");
 });
 
 module("Binding transforms", {

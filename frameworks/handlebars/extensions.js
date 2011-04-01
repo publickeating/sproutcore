@@ -25,6 +25,10 @@ sc_require("handlebars");
 
 SC.Handlebars = {};
 
+SC.Handlebars.Compiler = function() {};
+SC.Handlebars.Compiler.prototype = SC.beget(Handlebars.Compiler.prototype);
+SC.Handlebars.Compiler.prototype.compiler = SC.Handlebars.Compiler;
+
 SC.Handlebars.JavaScriptCompiler = function() {};
 SC.Handlebars.JavaScriptCompiler.prototype = SC.beget(Handlebars.JavaScriptCompiler.prototype);
 SC.Handlebars.JavaScriptCompiler.prototype.compiler = SC.Handlebars.JavaScriptCompiler;
@@ -37,12 +41,36 @@ SC.Handlebars.JavaScriptCompiler.prototype.nameLookup = function(parent, name, t
   }
 };
 
-SC.Handlebars.compile = function(string) {
-  var ast = Handlebars.parse(string);
-  var environment = new Handlebars.Compiler().compile(ast);
-  return new SC.Handlebars.JavaScriptCompiler().compile(environment, true);
+SC.Handlebars.Compiler.prototype.mustache = function(mustache) {
+  if (mustache.params.length || mustache.hash) {
+    return Handlebars.Compiler.prototype.mustache.call(this, mustache);
+  } else {
+    var id = new Handlebars.AST.IdNode(['bind']);
+    mustache = new Handlebars.AST.MustacheNode([id].concat([mustache.id]), mustache.hash, !mustache.escaped);
+    return Handlebars.Compiler.prototype.mustache.call(this, mustache);
+  }
 };
 
+SC.Handlebars.compile = function(string) {
+  var ast = Handlebars.parse(string);
+  var environment = new SC.Handlebars.Compiler().compile(ast, {data: true, stringParams: true});
+  return new SC.Handlebars.JavaScriptCompiler().compile(environment, {data: true, stringParams: true});
+};
+
+/**
+  Registers a helper in Handlebars that will be called if no property with the
+  given name can be found on the current context object, and no helper with
+  that name is registered.
+
+  This throws an exception with a more helpful error message so the user can
+  track down where the problem is happening.
+*/
+Handlebars.registerHelper('helperMissing', function(path, options) {
+  var error;
+
+  error = "%@ Handlebars error: Could not find property '%@' on object %@.";
+  throw error.fmt(options.data.view, path, this);
+});
 
 /**
   Determines the classes to add based on an array of bindings (provided as strings),

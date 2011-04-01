@@ -33,10 +33,17 @@ sc_require('extensions');
 */
 
 (function() {
+  var renderBindableSpan = function(spanId, fn, context) {
+    var renderContext = SC.RenderContext('span').id(spanId);
+    renderContext.push(fn(context));
+    return renderContext.element();
+  };
+
   var bind = function(property, options, preserveContext, shouldDisplay) {
     var data = options.data;
     var view = data.view;
     var fn = options.fn;
+    var inverse = options.inverse;
 
     var spanId = "handlebars-bound-" + jQuery.uuid++;
     var result = this.getPath(property);
@@ -46,6 +53,7 @@ sc_require('extensions');
     this.addObserver(property, function observer() {
       var result = self.getPath(property);
       var span = view.$("#" + spanId);
+      var element;
 
       if(span.length === 0) {
         self.removeObserver(property, observer);
@@ -53,14 +61,21 @@ sc_require('extensions');
       }
 
       if (fn && shouldDisplay(result)) {
-        var renderContext = SC.RenderContext('span').id(spanId);
-        renderContext.push(fn(self.get(property)));
-        var element = renderContext.element();
+        if (preserveContext) {
+          element = renderBindableSpan(spanId, fn, this);
+        } else {
+          element = renderBindableSpan(spanId, fn, self.get(property));
+        }
         span.replaceWith(element);
       } else if (shouldDisplay(result)) {
         span.html(Handlebars.Utils.escapeExpression(result));
-      } else {
-        span.html("");
+      } else if (inverse) {
+        if (preserveContext) {
+          element = renderBindableSpan(spanId, inverse, this);
+        } else {
+          element = renderBindableSpan(spanId, inverse, self.get(property));
+        }
+        span.replaceWith(element);
       }
     });
 
@@ -74,6 +89,12 @@ sc_require('extensions');
           renderContext.push(Handlebars.Utils.escapeExpression(result));
         }
       }
+    } else if (inverse) {
+      if (preserveContext) {
+        renderContext.push(inverse(this));
+      } else {
+        renderContext.push(inverse(result));
+      }
     }
 
     return new Handlebars.SafeString(renderContext.join());
@@ -85,12 +106,27 @@ sc_require('extensions');
 
   Handlebars.registerHelper('boundIf', function(property, fn) {
     if(fn) {
-      return bind.call(this, property, fn, true, function(result) { return !!result; } );
+      return bind.call(this, property, fn, true, function(result) {
+        if (SC.typeOf(result) === SC.T_ARRAY) {
+          if (result.length !== 0) { return true; }
+          return false;
+        } else {
+          return !!result;
+        }
+      } );
     } else {
       throw "Cannot use boundIf helper without a block.";
     }
   });
 })();
+
+Handlebars.registerHelper('with', function(context, options) {
+  return Handlebars.helpers.bind.call(options.contexts[0], context, options);
+});
+
+Handlebars.registerHelper('if', function(context, options) {
+  return Handlebars.helpers.boundIf.call(options.contexts[0], context, options);
+});
 
 Handlebars.registerHelper('bindAttr', function(options) {
   var attrs = options.hash;
