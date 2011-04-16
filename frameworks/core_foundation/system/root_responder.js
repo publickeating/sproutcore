@@ -60,6 +60,7 @@ SC.RootResponder = SC.Object.extend({
 
     if (SC.platform.supportsCSSTransitions) {
       this[SC.platform.cssPrefix+'TransitionEnd'] = this.transitionEnd;
+      this['transitionend'] = this.transitionEnd;
     }
   },
 
@@ -610,21 +611,21 @@ SC.RootResponder = SC.Object.extend({
   */
   setup: function() {
     // handle touch events
-    this.listenFor('touchstart touchmove touchend touchcancel'.w(), document);
+    this.listenFor(['touchstart', 'touchmove', 'touchend', 'touchcancel'], document);
 
     // handle basic events
-    this.listenFor('keydown keyup beforedeactivate mousedown mouseup click dblclick mousemove selectstart contextmenu'.w(), document)
-        .listenFor('resize'.w(), window);
+    this.listenFor(['keydown', 'keyup', 'beforedeactivate', 'mousedown', 'mouseup', 'click', 'dblclick', 'mousemove', 'selectstart', 'contextmenu'], document)
+        .listenFor(['resize'], window);
 
     if(SC.browser.msie) this.listenFor('focusin focusout'.w(), document);
-    else this.listenFor('focus blur'.w(), window);
+    else this.listenFor(['focus', 'blur'], window);
 
     // handle animation events
-    this.listenFor('webkitAnimationStart webkitAnimationIteration webkitAnimationEnd'.w(), document);
+    this.listenFor(['webkitAnimationStart', 'webkitAnimationIteration', 'webkitAnimationEnd'], document);
 
     // CSS Transitions
     if (SC.platform.supportsCSSTransitions) {
-      this.listenFor(['transitionEnd', SC.platform.cssPrefix+'TransitionEnd'], document);
+      this.listenFor(['transitionend', SC.platform.cssPrefix+'TransitionEnd'], document);
     }
 
     // handle special case for keypress- you can't use normal listener to block the backspace key on Mozilla
@@ -643,7 +644,7 @@ SC.RootResponder = SC.Object.extend({
     }
 
     // handle these two events specially in IE
-    'drag selectstart'.w().forEach(function(keyName) {
+    ['drag', 'selectstart'].forEach(function(keyName) {
       var method = this[keyName] ;
       if (method) {
         if (SC.browser.msie) {
@@ -1026,7 +1027,7 @@ SC.RootResponder = SC.Object.extend({
         }
       } else {
 
-        if ((responder.get ? responder.get("acceptsMultitouch") : responder.acceptsMultitouch) || !responder.hasTouch) {
+        if (responder && ((responder.get ? responder.get("acceptsMultitouch") : responder.acceptsMultitouch) || !responder.hasTouch)) {
           if (!responder.touchStart(touch)) responder = null;
         } else {
           // do nothing; the responder is the responder, and may stay the responder, and all will be fine

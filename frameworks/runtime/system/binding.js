@@ -5,7 +5,8 @@
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 
-sc_require('system/object') ;
+sc_require('ext/function');
+sc_require('system/object');
 
 /**
   Debug parameter you can turn on.  This will log all bindings that fire to
@@ -62,7 +63,7 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   do not usually work with Binding objects directly but instead describe
   bindings in your class definition using something like:
 
-    valueBinding: "MyApp.someController.title"
+        valueBinding: "MyApp.someController.title"
 
   This will create a binding from "MyApp.someController.title" to the "value"
   property of your object instance automatically.  Now the two values will be
@@ -79,7 +80,7 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   To customize a binding, you can use one of the many helper methods defined
   on SC.Binding like so:
 
-    valueBinding: SC.Binding.single("MyApp.someController.title")
+        valueBinding: SC.Binding.single("MyApp.someController.title")
 
   This will create a binding just like the example above, except that now the
   binding will convert the value of MyApp.someController.title to a single
@@ -88,7 +89,7 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
 
   You can also chain helper methods to build custom bindings like so:
 
-    valueBinding: SC.Binding.single("MyApp.someController.title").notEmpty("(EMPTY)")
+        valueBinding: SC.Binding.single("MyApp.someController.title").notEmpty("(EMPTY)")
 
   This will force the value of MyApp.someController.title to be a single value
   and then check to see if the value is "empty" (null, undefined, empty array,
@@ -105,7 +106,7 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   has changed, but your object will not be changing the preference itself, you
   could do:
 
-    bigTitlesBinding: SC.Binding.oneWay("MyApp.preferencesController.bigTitles")
+        bigTitlesBinding: SC.Binding.oneWay("MyApp.preferencesController.bigTitles")
 
   This way if the value of MyApp.preferencesController.bigTitles changes the
   "bigTitles" property of your object will change also.  However, if you
@@ -129,9 +130,9 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   not allow Integers less than ten.  Note that it checks the value of the
   bindings and allows all other values to pass:
 
-    valueBinding: SC.Binding.transform(function(value, binding) {
-      return ((SC.typeOf(value) === SC.T_NUMBER) && (value < 10)) ? 10 : value;
-    }).from("MyApp.someController.value")
+        valueBinding: SC.Binding.transform(function(value, binding) {
+          return ((SC.typeOf(value) === SC.T_NUMBER) && (value < 10)) ? 10 : value;
+        }).from("MyApp.someController.value")
 
   If you would like to instead use this transform on a number of bindings,
   you can also optionally add your own helper method to SC.Binding.  This
@@ -139,22 +140,22 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   below adds a new helper called notLessThan() which will limit the value to
   be not less than the passed minimum:
 
-    SC.Binding.notLessThan = function(minValue) {
-      return this.transform(function(value, binding) {
-        return ((SC.typeOf(value) === SC.T_NUMBER) && (value < minValue)) ? minValue : value ;
-      }) ;
-    } ;
+      SC.Binding.notLessThan = function(minValue) {
+        return this.transform(function(value, binding) {
+          return ((SC.typeOf(value) === SC.T_NUMBER) && (value < minValue)) ? minValue : value ;
+        }) ;
+      } ;
 
   You could specify this in your core.js file, for example.  Then anywhere in
   your application you can use it to define bindings like so:
 
-    valueBinding: SC.Binding.from("MyApp.someController.value").notLessThan(10)
+        valueBinding: SC.Binding.from("MyApp.someController.value").notLessThan(10)
 
   Also, remember that helpers are chained so you can use your helper along with
   any other helpers.  The example below will create a one way binding that
   does not allow empty values or values less than 10:
 
-    valueBinding: SC.Binding.oneWay("MyApp.someController.value").notEmpty().notLessThan(10)
+        valueBinding: SC.Binding.oneWay("MyApp.someController.value").notEmpty().notLessThan(10)
 
   Note that the built in helper methods all allow you to pass a "from"
   property path so you don't have to use the from() helper to set the path.
@@ -174,12 +175,12 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   bindings that allow values greater than 10 throughout your app.  You could
   create a binding template in your core.js like this:
 
-    MyApp.LimitBinding = SC.Binding.oneWay().notEmpty().notLessThan(10);
+        MyApp.LimitBinding = SC.Binding.oneWay().notEmpty().notLessThan(10);
 
   Then anywhere you want to use this binding, just refer to the template like
   so:
 
-    valueBinding: MyApp.LimitBinding.beget("MyApp.someController.value")
+        valueBinding: MyApp.LimitBinding.beget("MyApp.someController.value")
 
   Note that when you use binding templates, it is very important that you
   always start by using beget() to extend the template.  If you do not do
@@ -206,14 +207,14 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   examples above, during init, SproutCore objects will effectively call
   something like this on your binding:
 
-    binding = this.valueBinding.beget().to("value", this) ;
+        binding = this.valueBinding.beget().to("value", this) ;
 
   This creates a new binding instance based on the template you provide, and
   sets the to path to the "value" property of the new object.  Now that the
   binding is fully configured with a "from" and a "to", it simply needs to be
   connected to become active.  This is done through the connect() method:
 
-    binding.connect() ;
+        binding.connect() ;
 
   Now that the binding is connected, it will observe both the from and to side
   and relay changes.
@@ -222,25 +223,25 @@ SC.EMPTY_PLACEHOLDER = '@@EMPTY@@' ;
   understand this anyway), you could manually create an active binding by
   doing the following:
 
-    SC.Binding.from("MyApp.someController.value")
-     .to("MyApp.anotherObject.value")
-     .connect();
+        SC.Binding.from("MyApp.someController.value")
+         .to("MyApp.anotherObject.value")
+         .connect();
 
   You could also use the bind() helper method provided by SC.Object. (This is
   the same method used by SC.Object.init() to setup your bindings):
 
-    MyApp.anotherObject.bind("value", "MyApp.someController.value") ;
+        MyApp.anotherObject.bind("value", "MyApp.someController.value") ;
 
   Both of these code fragments have the same effect as doing the most friendly
   form of binding creation like so:
 
 
-    MyApp.anotherObject = SC.Object.create({
-      valueBinding: "MyApp.someController.value",
+        MyApp.anotherObject = SC.Object.create({
+          valueBinding: "MyApp.someController.value",
 
-      // OTHER CODE FOR THIS OBJECT...
+          // OTHER CODE FOR THIS OBJECT...
 
-    }) ;
+        }) ;
 
   SproutCore's built in binding creation method make it easy to automatically
   create bindings for you.  You should always use the highest-level APIs
@@ -339,7 +340,13 @@ SC.Binding = /** @scope SC.Binding.prototype */{
     this.isConnected = YES ;
     this._connectionPending = YES ; // its connected but not really...
     this._syncOnConnect = YES ;
+
     SC.Binding._connectQueue.add(this) ;
+
+    if (!SC.RunLoop.isRunLoopInProgress()) {
+      this._scheduleSync();
+    }
+
     return this;
   },
 
@@ -446,6 +453,8 @@ SC.Binding = /** @scope SC.Binding.prototype */{
       this._setBindingValue(target, key) ;
       this._changePending = YES ;
       SC.Binding._changeQueue.add(this) ; // save for later.
+
+      this._scheduleSync();
     }
   },
 
@@ -473,7 +482,18 @@ SC.Binding = /** @scope SC.Binding.prototype */{
       this._setBindingValue(target, key) ;
       this._changePending = YES ;
       SC.Binding._changeQueue.add(this) ; // save for later.
+
+      this._scheduleSync();
     }
+  },
+
+  _scheduleSync: function() {
+    if (SC.RunLoop.isRunLoopInProgress() || this._syncScheduled) { return; }
+
+    this._syncScheduled = YES;
+    var self = this;
+
+    setTimeout(function() { SC.run(); self._syncScheduled = NO; }, 1);
   },
 
   /** @private
@@ -596,7 +616,7 @@ SC.Binding = /** @scope SC.Binding.prototype */{
       if (bench) SC.Benchmark.start(this.toString() + "->") ;
       if (this.isForward()) {
         // In the forward direction the source equals the from target and the from value is unchanged
-        this._fromTarget.setPathIfChanged(this._fromPropertyKey, v) ;
+      this._fromTarget.setPathIfChanged(this._fromPropertyKey, v) ;
       } else {
         // In the reverse direction the source equals the to target and the from value is reverse transformed
         this._fromTarget.setPathIfChanged(this._fromPropertyKey, tv) ;
@@ -609,7 +629,7 @@ SC.Binding = /** @scope SC.Binding.prototype */{
       if (bench) SC.Benchmark.start(this.toString() + "<-") ;
       if (this._oneWay || this.isForward()) {
         // In the forward direction the source equals the from target and the to value is transformed
-        this._toTarget.setPathIfChanged(this._toPropertyKey, tv) ;
+      this._toTarget.setPathIfChanged(this._toPropertyKey, tv) ;
       } else {
         // In the reverse direction the source equals the to target and the to value is unchanged
         this._toTarget.setPathIfChanged(this._toPropertyKey, v) ;
@@ -862,9 +882,9 @@ SC.Binding = /** @scope SC.Binding.prototype */{
     This will allow single values, nulls, and error values to pass through.  If
     you pass an array, it will be mapped as so:
 
-      [] => null
-      [a] => a
-      [a,b,c] => Multiple Placeholder
+          [] => null
+          [a] => a
+          [a,b,c] => Multiple Placeholder
 
     You can pass in an optional multiple placeholder or it will use the
     default.
@@ -909,7 +929,7 @@ SC.Binding = /** @scope SC.Binding.prototype */{
 
   /**
     Adds a transform that will return the placeholder value if the value is
-    null.  Otherwise it will passthrough untouched.  See also notEmpty().
+    null or undefined.  Otherwise it will passthrough untouched.  See also notEmpty().
 
     @param {String} fromPath from path or null
     @param {Object} placeholder optional placeholder;
@@ -1027,8 +1047,8 @@ SC.Binding = /** @scope SC.Binding.prototype */{
   },
 
   /**
-    Adds a transform that will return YES if the value is null, NO otherwise.
-
+    Adds a transform that will return YES if the value is null or undefined, NO otherwise.
+    
     @param {String} fromPath optional from path
     @returns {SC.Binding} this
   */
@@ -1052,7 +1072,7 @@ SC.Binding = /** @scope SC.Binding.prototype */{
 /**
   Shorthand method to define a binding.  This is the same as calling:
 
-    SC.binding(path) = SC.Binding.from(path)
+        SC.binding(path) = SC.Binding.from(path)
 */
 SC.binding = function(path, root) { return SC.Binding.from(path,root); } ;
 

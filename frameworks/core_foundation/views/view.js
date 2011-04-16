@@ -11,7 +11,7 @@ sc_require('system/cursor');
 sc_require('system/responder') ;
 sc_require('system/theme');
 
-sc_require('mixins/string') ;
+sc_require('system/string') ;
 sc_require('views/view/base') ;
 
 
@@ -42,7 +42,7 @@ SC.EMPTY_CHILD_VIEWS_ARRAY.needsClone = YES;
 SC.CoreView.reopen(
 /** @scope SC.View.prototype */ {
 
-  concatenatedProperties: 'outlets displayProperties classNames renderMixin didCreateLayerMixin willDestroyLayerMixin'.w(),
+  concatenatedProperties: ['outlets', 'displayProperties', 'classNames', 'renderMixin', 'didCreateLayerMixin', 'willDestroyLayerMixin'],
 
   /**
     The current pane.
@@ -428,6 +428,13 @@ SC.CoreView.reopen(
       // invalidate it.
       childView.notifyPropertyChange('layer');
 
+      // A strange case, that a childView's frame won't be correct before
+      // we have a layer, if the childView doesn't have a fixed layout
+      // and we are using static layout
+      if (this.get('useStaticLayout')) {
+        if (!childView.get('isFixedLayout')) { childView.viewDidResize(); }
+      }
+
       childView._notifyDidCreateLayer() ;
     }
   },
@@ -615,7 +622,12 @@ SC.CoreView.reopen(
       }
     }
 
+    // If we've made it this far and renderChildViews() was never called,
+    // render any child views now.
     if (firstTime && !this._didRenderChildViews) { this.renderChildViews(context, firstTime); }
+    // Reset the flag so that if the layer is recreated we re-render the child views
+    this._didRenderChildViews = NO;
+
 
     if (mixins = this.renderMixin) {
       len = mixins.length;
@@ -689,6 +701,8 @@ SC.CoreView.reopen(
       view.renderToContext(context, firstTime);
       context = context.end() ;
     }
+    this._didRenderChildViews = YES;
+
     return context;
   },
 
@@ -776,7 +790,7 @@ SC.CoreView.reopen(
   */
   displayToolTip: function() {
     var ret = this.get('toolTip');
-    return (ret && this.get('localize')) ? ret.loc() : (ret || '');
+    return (ret && this.get('localize')) ? SC.String.loc(ret) : (ret || '');
   }.property('toolTip','localize').cacheable(),
 
   /**
@@ -1372,7 +1386,7 @@ SC.CoreView.mixin(/** @scope SC.View.prototype */ {
     while(--idx>=0) {
       viewClass = childViews[idx];
       loc = childLocs[idx];
-      if (loc && viewClass && viewClass.loc) viewClass.loc(loc) ;
+      if (loc && viewClass && typeof viewClass === SC.T_STRING) SC.String.loc(viewClass, loc);
     }
 
     return this; // done!
@@ -1419,8 +1433,8 @@ SC.CoreView.unload = function() {
   }
 } ;
 
-/** 
-  @class 
+/**
+  @class
 
   Base class for managing a view.  Views provide two functions:
 

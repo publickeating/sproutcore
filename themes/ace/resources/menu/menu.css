@@ -14,6 +14,15 @@ $theme.menu {
     background: transparent;
     border: 0px none;
     
+    .value {
+      margin-left: 20px;
+      line-height: 20px;
+    }
+
+    .has-icon .value {
+      margin-left: 44px;
+    }
+    
     &.focus, a:hover {
       span { color: white; }
       @include slice("menu_item.png", $width: 1, $repeat: repeat-x);
