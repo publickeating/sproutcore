@@ -5,8 +5,6 @@
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
 
-sc_require('protocols/file_field_view_delegate');
-
 /** @class
 
   Implements a customized file input by creating a transparent file type input over top of a SC.ButtonView and using a hidden iframe to receive results (simulated AJAX).
@@ -364,8 +362,6 @@ SC.FileFieldView = SC.View.extend(SC.DelegateSupport,
       },
 
       willDestroyLayer: function() {
-        sc_super();
-
         this.removeAllChildren();
       }
 
