@@ -856,7 +856,7 @@ SC.CoreView.reopen(
     @property {Array}
     @readOnly
   */
-  displayProperties: ['isFirstResponder'],
+  displayProperties: [],
 
   // .......................................................
   // SC.RESPONDER SUPPORT
@@ -1184,14 +1184,17 @@ SC.CoreView.reopen(
     }
 
     attrs.owner = attrs.parentView = this ;
+
+    // We need to set isVisibleInWindow before the init method is called on the view
+    // The prototype check is a bit hackish and should be revisited - PDW
+    if (view.isClass && view.prototype.hasVisibility) {
+      attrs.isVisibleInWindow = this.get('isVisibleInWindow');
+    }
+
     if (!attrs.page) { attrs.page = this.page ; }
 
     // Now add this to the attributes and create.
     if (view.isClass) { view = view.create(attrs); }
-
-    if (view.hasVisibility) {
-      view.set('isVisibleInWindow', this.get('isVisibleInWindow'));
-    }
 
     return view ;
   },
@@ -1512,7 +1515,9 @@ SC.CoreView.unload = function() {
 
 */
 SC.View = SC.CoreView.extend(/** @scope SC.View.prototype */{
-  classNames: ['sc-view']
+  classNames: ['sc-view'],
+  
+  displayProperties: ['isFirstResponder']
 });
 
 //unload views for IE, trying to collect memory.
