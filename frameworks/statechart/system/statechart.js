@@ -888,17 +888,17 @@ SC.StatechartManager = {
     {{{
     
       // With one arguments. 
-      gotoHistorytate(<state>)
+      gotoHistoryState(<state>)
       
       // With two arguments. 
-      gotoHistorytate(<state>, <state | boolean | hash>)
+      gotoHistoryState(<state>, <state | boolean | hash>)
       
       // With three arguments.
-      gotoHistorytate(<state>, <state>, <boolean | hash>)
-      gotoHistorytate(<state>, <boolean>, <hash>)
+      gotoHistoryState(<state>, <state>, <boolean | hash>)
+      gotoHistoryState(<state>, <boolean>, <hash>)
       
       // With four argumetns
-      gotoHistorytate(<state>, <state>, <boolean>, <hash>)
+      gotoHistoryState(<state>, <state>, <boolean>, <hash>)
     
     }}}
     
