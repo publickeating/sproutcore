@@ -680,6 +680,7 @@ SC.ButtonView = SC.View.extend(SC.Control,
 
   /** @private */
   touchStart: function(touch){
+    SC.Benchmark.addEvent('SC.ButtonView: touchStart');
     var buttonBehavior = this.get('buttonBehavior');
 
     if (!this.get('isEnabled')) return YES ; // handled event, but do nothing

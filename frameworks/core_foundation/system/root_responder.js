@@ -1106,6 +1106,8 @@ SC.RootResponder = SC.Object.extend(
     If shouldStack is YES, the previous responder will be kept so that it may be returned to later.
   */
   captureTouch: function(touch, startingPoint, shouldStack) {
+
+    SC.Benchmark.addEvent('SC.RootResponder captureTouch');
     if (!startingPoint) startingPoint = this;
 
     var target = touch.targetView, view = target,
@@ -1252,13 +1254,17 @@ SC.RootResponder = SC.Object.extend(
     // Starting iOS5 touch events are handled by textfields.
     // As a workaround just let the browser to use the default behavior.
     if(this.ignoreTouchHandle(evt)) return YES;
+    SC.Benchmark.addEvent('SC.RootResponder: touchstart');
+    SC.Benchmark.start('SC.RootResponder: touchstart');
 
 
     var hidingTouchIntercept = NO;
 
     SC.run(function() {
+      SC.Benchmark.addEvent('SC.RootResponder: touchstart: new run loop');
       // sometimes WebKit is a bit... iffy:
       this.endMissingTouches(evt.touches);
+      SC.Benchmark.addEvent('SC.RootResponder: touchstart: past WebKit hack');
 
       // as you were...
       // loop through changed touches, calling touchStart, etc.
@@ -1268,12 +1274,15 @@ SC.RootResponder = SC.Object.extend(
       // prepare event for touch mapping.
       evt.touchContext = this;
 
+      SC.Benchmark.start('Touch Loop', 'SC.RootResponder: touchstart');
       // Loop through each touch we received in this event
       for (idx = 0; idx < len; idx++) {
         touch = touches[idx];
 
         // Create an SC.Touch instance for every touch.
+      SC.Benchmark.start('Create Touch', 'SC.RootResponder: touchstart');
         touchEntry = SC.Touch.create(touch, this);
+      SC.Benchmark.end('Create Touch', 'SC.RootResponder: touchstart');
 
         // skip the touch if there was no target
         if (!touchEntry.targetView) continue;
@@ -1296,13 +1305,17 @@ SC.RootResponder = SC.Object.extend(
         // with startTouch and cancelTouch. in this case, only startTouch, as
         // there are no existing touch responders. We send the touchEntry
         // because it is cached (we add the helpers only once)
+      SC.Benchmark.start('Capture Touch', 'SC.RootResponder: touchstart');
         this.captureTouch(touchEntry, this);
+      SC.Benchmark.end('Capture Touch', 'SC.RootResponder: touchstart');
 
         // Unset the reference to the original event so we can garbage collect.
         touchEntry.event = null;
       }
+      SC.Benchmark.end('Touch Loop', 'SC.RootResponder: touchstart');
     }, this);
 
+    SC.Benchmark.end('SC.RootResponder: touchstart');
 
     // hack for text fields
     if (hidingTouchIntercept) {

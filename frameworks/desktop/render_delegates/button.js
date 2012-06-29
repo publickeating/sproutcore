@@ -48,7 +48,7 @@ SC.BaseTheme.buttonRenderDelegate = SC.RenderDelegate.create({
   */
   render: function(dataSource, context) {
     this.addSizeClassName(dataSource, context);
-    
+
     var labelContent,
         toolTip     = dataSource.get('toolTip'),
         isSelected  = dataSource.get('isSelected') || NO,
@@ -70,15 +70,15 @@ SC.BaseTheme.buttonRenderDelegate = SC.RenderDelegate.create({
       context.attr('title', toolTip);
       context.attr('alt', toolTip);
     }
-    
+
     this.includeSlices(dataSource, context, SC.THREE_SLICE);
     // accessibility
     if(dataSource.get('isSegment')){
       context.attr('aria-selected', isSelected.toString());
     }else if(isToggle) {
       context.attr('aria-pressed', isActive.toString());
-    } 
-    
+    }
+
     context.attr('aria-labelledby', labelId);
 
     // Create the inner label element that contains the text and, optionally,
@@ -103,7 +103,7 @@ SC.BaseTheme.buttonRenderDelegate = SC.RenderDelegate.create({
   */
   update: function(dataSource, jquery) {
     var isToggle = (dataSource.get('buttonBehavior')===SC.TOGGLE_BEHAVIOR);
-    
+
     this.updateSizeClassName(dataSource, jquery);
 
     if (dataSource.get('isActive')) {
@@ -117,7 +117,7 @@ SC.BaseTheme.buttonRenderDelegate = SC.RenderDelegate.create({
     }else if(isToggle){
       jquery.attr('aria-pressed', dataSource.get('isActive').toString());
     }
-    
+
     jquery.attr('title', dataSource.get('toolTip'));
 
     jquery.setClass('icon', !!dataSource.get('icon'));
@@ -125,8 +125,10 @@ SC.BaseTheme.buttonRenderDelegate = SC.RenderDelegate.create({
     jquery.setClass('cancel', !!isCancel && !isDefault);
 
     dataSource.get('theme').labelRenderDelegate.update(dataSource, jquery.find('label'));
+
+    SC.Benchmark.addEvent('SC.ButtonView: update');
   },
-  
+
   /**
     Returns the layer to be used for auto resizing.
   */
