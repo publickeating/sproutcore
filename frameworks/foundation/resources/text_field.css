@@ -1,6 +1,6 @@
 /* Common SC.TextFieldView styles - needed to work properly */
 
-.sc-text-field-view {
+.sc-text-field-view-OFF {
   border:none;
   overflow: visible;
   background :white;
@@ -54,10 +54,10 @@
     bottom: 1px;
     top: 2px;
   }
-  
+
   .sc-hint {
     z-index: 1;
-  }  
+  }
 
   .sc-hint, .hint {
     position: absolute;
@@ -91,9 +91,9 @@
 
   .webkit &{
     &.focus {
-      outline: auto 7px -webkit-focus-ring-color; 
+      outline: auto 7px -webkit-focus-ring-color;
       outline-offset: -2px;
-    } 
+    }
     .border {
       -webkit-appearance: textfield;
     }
@@ -105,7 +105,7 @@
       outline-offset:-5px;
       outline-style:solid;
       outline-width:3px;
-    } 
+    }
     .border {
       -moz-appearance: textfield;
     }
