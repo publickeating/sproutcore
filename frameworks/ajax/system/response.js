@@ -386,9 +386,18 @@ SC.Response = SC.Object.extend(
 
       target = notifier.target;
       action = notifier.action;
-      if (SC.typeOf(action) === SC.T_STRING) { action = target[action]; }
 
-      handled = action.apply(target, args);
+      // If the target is a statechart, invoke the method on it.
+      if (target.isStatechart) {
+        args.unshift(action);
+        handled = target.invokeStateMethod.apply(target, args);
+      } else {
+        if (SC.typeOf(action) === SC.T_STRING) {
+          action = target[action];
+        }
+
+        handled = action.apply(target, args);
+      }
     }
 
     return handled;
