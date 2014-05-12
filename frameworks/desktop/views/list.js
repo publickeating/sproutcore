@@ -678,10 +678,18 @@ SC.ListView = SC.CollectionView.extend(SC.CollectionRowDelegate,
     if (layoutDirection === SC.LAYOUT_HORIZONTAL) {
       left = itemViewLayout.left;
       if (dropOperation & SC.DROP_AFTER) { left += itemViewLayout.width; }
+
+      // Subtract half the width of the insertion point so that it appears evenly between the items.
+      left -= Math.round(insertionPoint.get('layout').width / 2);
+
       top = ((level + 1) * indent) + 12;
     } else {
       top = itemViewLayout.top;
       if (dropOperation & SC.DROP_AFTER) { top += itemViewLayout.height; }
+
+      // Subtract half the height of the insertion point so that it appears evenly between the items.
+      top -= Math.round(insertionPoint.get('layout').height / 2);
+
       left = ((level + 1) * indent) + 12;
     }
 

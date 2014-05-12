@@ -203,6 +203,10 @@ SC.GridView = SC.ListView.extend(
       top = layout.top;
       left = layout.left;
       if (dropOperation & SC.DROP_AFTER) left += layout.width;
+
+      // Subtract half the width of the insertion point so that it appears evenly between the items.
+      left -= Math.round(insertionPoint.get('layout').width / 2);
+
       var height = layout.height;
 
       // Adjust the position of the insertion point.
