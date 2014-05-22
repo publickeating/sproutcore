@@ -22,7 +22,17 @@ SC.BaseTheme.buttonRenderDelegate = SC.RenderDelegate.create({
 
   'sc-regular-size': {
     height: 24,
-    autoResizePadding: { width: 20, height: 0 }
+    autoResizePaddingFor: function (dataSource) {
+      var ret = { width: 20, height: 0 };
+      var view = dataSource._view;
+
+      // Take the width of the icon into account.
+      if (view.get('icon')) {
+        ret.width += Math.round(dataSource._view.$('img.icon')[0].clientWidth / 2);
+      }
+
+      return ret;
+    }
   },
 
   'sc-huge-size': {
