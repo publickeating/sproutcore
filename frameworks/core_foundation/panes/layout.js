@@ -21,7 +21,7 @@ SC.Pane.reopen(
     @returns {Rect} current window size
   */
   computeParentDimensions: function (frame) {
-    if (this.get('designer') && SC.suppressMain) { return sc_super(); }
+    // if (this.get('designer') && SC.suppressMain) { return sc_super(); }
 
     var wDim = {x: 0, y: 0, width: 1000, height: 1000},
         layout = this.get('layout');
@@ -64,10 +64,10 @@ SC.Pane.reopen(
   },
 
   /** @private Disable caching due to an known bug in SC. */
-  frame: function () {
-    if (this.get('designer') && SC.suppressMain) { return sc_super(); }
-    return this.computeFrameWithParentFrame(null);
-  }.property(),
+  // frame: function () {
+  //   if (this.get('designer') && SC.suppressMain) { return sc_super(); }
+  //   return this.computeFrameWithParentFrame(null);
+  // }.property(),
 
   /**
     Invoked by the root responder whenever the window resizes.  This should
