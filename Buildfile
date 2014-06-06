@@ -100,7 +100,7 @@ config :core_tools, :required => [
 # end
 
 config :welcome,
-  :required => [:core_tools],
+  :required => [:core_tools, :sproutcore2],
   :theme => :ace
 
 config :tests,
