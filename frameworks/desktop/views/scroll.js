@@ -1115,7 +1115,7 @@ SC.ScrollView = SC.View.extend({
       else if (horizontalAlign === SC.ALIGN_CENTER) {
         // We'll do this by determining the amount of total amount space available.
         // We can find the "left" of the contentView by dividing that by 2.
-        leftOffset = (viewportWidth - newContentViewWidth ) / 2;
+        leftOffset = (viewportWidth - newContentViewWidth) / 2;
       }
       else {
         leftOffset = viewportWidth - newContentViewWidth;
@@ -1173,9 +1173,6 @@ SC.ScrollView = SC.View.extend({
 
     // Vertical
 
-    var topOffset;
-    var verticalScrollOffset;
-
     var viewportHeight = containerViewFrame.height,
       newContentViewHeight = contentViewFrame.originalHeight * newScale,
       topOffset, verticalScrollOffset;
@@ -1192,7 +1189,7 @@ SC.ScrollView = SC.View.extend({
       else if (verticalAlign === SC.ALIGN_MIDDLE) {
         // We'll do this by determining the amount of total amount space available.
         // We can find the "top" of the contentView by dividing that by 2.
-        topOffset = (viewportHeight - newContentViewHeight ) / 2;
+        topOffset = (viewportHeight - newContentViewHeight) / 2;
       }
       else { // bottom
         topOffset = viewportHeight - newContentViewHeight;
@@ -1517,7 +1514,8 @@ SC.ScrollView = SC.View.extend({
     if (contentView) {
       // If the view implements its own scaling, call that instead.
       if (contentView.isScalable) {
-        SC.run(function() { contentView.applyScale(scale) });
+        var scale = this._scale;
+        SC.run(function() { contentView.applyScale(scale); });
         scaleCSS = '';
       }
       // Otherwise, add the scaling CSS.
@@ -2489,35 +2487,45 @@ SC.ScrollView = SC.View.extend({
     and scrollLeft properties of the container view.
   */
   adjustElementScroll: function () {
-    var container = this.get('containerView'),
-        content = this.get('contentView'),
-        verticalScrollOffset = this.get('verticalScrollOffset'),
-        horizontalScrollOffset = this.get('horizontalScrollOffset');
+    var contentView = this.get('contentView'),
+      verticalScrollOffset = this.get('verticalScrollOffset'),
+      horizontalScrollOffset = this.get('horizontalScrollOffset');
 
     // We notify the content view that its frame property has changed
-    // before we actually update the scrollTop/scrollLeft properties.
+    // before we actually update the position.
     // This gives views that use incremental rendering a chance to render
     // newly-appearing elements before they come into view.
-    if (content) {
+    if (contentView) {
       // Notify the child that its frame is changing.
-      if (content._viewFrameDidChange) { content._viewFrameDidChange(); }
+      if (contentView._viewFrameDidChange) { contentView._viewFrameDidChange(); }
     }
 
-    if (container) {
-      container = container.$()[0];
+    var transformAttribute = SC.browser.experimentalStyleNameFor('transform'),
+      transformStyle = '';
 
-      if (container) {
-        if (verticalScrollOffset !== this._verticalScrollOffset) {
-          container.scrollTop = verticalScrollOffset;
-          this._verticalScrollOffset = verticalScrollOffset;
-        }
+    // Essentially IE8.
+    if (transformAttribute === SC.UNSUPPORTED) {
+      var containerView = this.get('containerView');
+      var containerViewLayer = containerView.get('layer');
+      containerViewLayer.style.marginLeft = -horizontalScrollOffset + 'px';
+      containerViewLayer.style.marginTop = -verticalScrollOffset + 'px';
 
-        if (horizontalScrollOffset !== this._horizontalScrollOffset) {
-          container.scrollLeft = horizontalScrollOffset;
-          this._horizontalScrollOffset = horizontalScrollOffset;
-        }
-      }
+    // Use translate to move the content.
+    } else {
+      transformStyle = 'translateX(-' + horizontalScrollOffset + 'px) translateY(-' + verticalScrollOffset + 'px)';
+
+      // double check to make sure this is needed
+      if (SC.platform.supportsCSS3DTransforms) { transformStyle += ' translateZ(0px)'; }
+
+      // Assign the style to the content.
+      var contentViewLayer = contentView.get('layer');
+      contentViewLayer.style[transformAttribute] = transformStyle;
     }
+
+    // Update the cached values.
+    // TODO: Why?
+    this._horizontalScrollOffset = horizontalScrollOffset;
+    this._verticalScrollOffset = verticalScrollOffset;
   },
 
   /** @private */
