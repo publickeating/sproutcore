@@ -1030,7 +1030,7 @@ SC.ScrollView = SC.View.extend({
   maximumScale: 2.0,
 
   /** @private Updates scale. */
-  _scsv_scaleDidChange: function() {
+  _scsv_scaleDidChange: function () {
     var contentView = this.get('contentView');
     if (contentView) {
       // If the content view implements its own scalability, use that instead.
@@ -1045,7 +1045,7 @@ SC.ScrollView = SC.View.extend({
   }.observes('scale'),
 
   /** @private Updates the scale and scroll offsets as needed. */
-  _scsv_adjustForScale: function() {
+  _scsv_adjustForScale: function () {
     // For now, disable this code during touch scrolling, since the touch specific
     // code takes that over.
     if (this.touch) {
@@ -1509,7 +1509,7 @@ SC.ScrollView = SC.View.extend({
       // If the view implements its own scaling, call that instead.
       if (contentView.isScalable) {
         var scale = this._scale;
-        SC.run(function() { contentView.applyScale(scale); });
+        SC.run(function () { contentView.applyScale(scale); });
         scaleCSS = '';
       }
       // Otherwise, add the scaling CSS.
@@ -1533,7 +1533,7 @@ SC.ScrollView = SC.View.extend({
     style[SC.browser.experimentalStyleNameFor('transformOrigin')] = "top left";
   },
 
-  _clearMidTouchTransforms: function(layer) {
+  _clearMidTouchTransforms: function (layer) {
     if (!layer) return;
     // Clear our touch styles, returning the transform origin to its original value.
     var style = layer.style;
@@ -2501,8 +2501,10 @@ SC.ScrollView = SC.View.extend({
     if (transformAttribute === SC.UNSUPPORTED) {
       var containerView = this.get('containerView');
       var containerViewLayer = containerView.get('layer');
-      containerViewLayer.style.marginLeft = -horizontalScrollOffset + 'px';
-      containerViewLayer.style.marginTop = -verticalScrollOffset + 'px';
+      if (containerViewLayer) {
+        containerViewLayer.style.marginTop = -verticalScrollOffset + 'px';
+        containerViewLayer.style.marginLeft = -horizontalScrollOffset + 'px';
+      }
 
     // Use translate to move the content.
     } else {
@@ -2513,7 +2515,9 @@ SC.ScrollView = SC.View.extend({
 
       // Assign the style to the content.
       var contentViewLayer = contentView.get('layer');
-      contentViewLayer.style[transformAttribute] = transformStyle;
+      if (contentViewLayer) {
+        contentViewLayer.style[transformAttribute] = transformStyle;
+      }
     }
 
     // Update the cached values.
