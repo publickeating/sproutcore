@@ -1342,7 +1342,7 @@ SC.CoreView.reopen(
   _isFirstResponderDidChange: function () {
     var isFirstResponder = this.get('isFirstResponder');
 
-    this.$().toggleClass('focus', isFirstResponder);
+    this.$().toggleClass('sc-focus', isFirstResponder);
   },
 
   _notifyDidRender: function () {
